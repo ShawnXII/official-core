@@ -21,7 +21,7 @@
 	default-autowire="byName" default-lazy-init="false">
 	
 	<context:property-placeholder location="classpath:resources.properties" />
-	
+	<bean class="com.official.core.util.SpringUtils"> </bean>
 	<!-- EclipseLink 连接池配置-->
 	<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
 		<property name="persistenceXmlLocation" value="classpath:META-INF/persistence.xml" />

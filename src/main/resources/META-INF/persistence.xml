@@ -24,18 +24,18 @@
 		<class>com.official.foundation.domain.po.system.Menu</class>
 		<class>com.official.foundation.domain.po.system.Params</class>
 		<class>com.official.foundation.domain.po.system.Power</class>
-		<class>com.official.foundation.domain.po.system.Resource</class>
+		<class>com.official.foundation.domain.po.system.SystemResource</class>
 		<class>com.official.foundation.domain.po.system.Role</class>
 		<class>com.official.foundation.domain.po.system.SystemConfig</class>
-		<class>com.official.foundation.domain.po.system.Task</class>
+		<class>com.official.foundation.domain.po.system.SystemTask</class>
 		<!-- 用户相关 -->
 		<class>com.official.foundation.domain.po.user.Account</class>
 		<class>com.official.foundation.domain.po.user.AuditRecord</class>
 		<class>com.official.foundation.domain.po.user.Comment</class>
-		<class>com.official.foundation.domain.po.user.Feedback</class>
+		<class>com.official.foundation.domain.po.user.UserFeedback</class>
 		<class>com.official.foundation.domain.po.user.OperationRecord</class>
-		<class>com.official.foundation.domain.po.user.Store</class>
-		<class>com.official.foundation.domain.po.user.User</class>
+		<class>com.official.foundation.domain.po.user.UserStore</class>
+<!-- 		<class>com.official.foundation.domain.po.user.User</class> -->
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />
 			<property name="javax.persistence.jdbc.url"
