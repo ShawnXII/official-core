@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:websocket="http://www.springframework.org/schema/websocket"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xsi:schemaLocation="
+       http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/tx 
+       http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://www.springframework.org/schema/mvc
+       http://www.springframework.org/schema/mvc/spring-mvc.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+       http://www.springframework.org/schema/websocket http://www.springframework.org/schema/websocket/spring-websocket.xsd
+       http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+       http://www.springframework.org/schema/data/repository http://www.springframework.org/schema/data/repository/spring-repository-1.5.xsd"
+	default-autowire="byName" default-lazy-init="false">
+	
+	<context:property-placeholder location="classpath:resources.properties" />
+	
+	<!-- EclipseLink 连接池配置-->
+	<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="persistenceXmlLocation" value="classpath:META-INF/persistence.xml" />
+		<property name="persistenceUnitName" value="${jpa.persistenceUnitName}" />
+		<property name="jpaVendorAdapter">
+			<bean
+				class="org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter">
+				<property name="generateDdl" value="${jpa.generateDdl}" />
+				<property name="database" value="${jpa.database}" />
+				<property name="showSql" value="${jpa.showSql}" />
+			</bean>
+		</property>
+		<property name="jpaPropertyMap">
+			<map>
+				<entry key="eclipselink.weaving" value="false" />
+				<entry key="eclipselink.connection-pool.default.initial" value="1" />	
+				<entry key="eclipselink.connection-pool.default.max" value="150" />
+				<entry key="eclipselink.connection-pool.default.min" value="1" />
+				<entry key="eclipselink.jdbc.read-connections.min" value="20" />
+				<entry key="eclipselink.jdbc.write-connections.min" value="20" />
+				<entry key="eclipselink.jdbc.batch-writing" value="JDBC" />
+				<!-- <entry key="eclipselink.cache.size.default" value="50000"/> <entry 
+					key="eclipselink.cache.type.default" value="Soft"/> <entry key="eclipselink.jdbc.cache-statements" 
+					value="true"/> <entry key="eclipselink.jdbc.cache-statements.size" value="100000"/> 
+					<entry key="eclipselink.weaving.changetracking" value="true"/> <entry key="eclipselink.jdbc.read-connections.shared" 
+					value="true"/> <entry key="eclipselink.flush-clear.cache" value="Drop"/> -->
+			</map>
+		</property>
+	</bean>
+	<!-- Spring Data JPA 配置 -->
+	<jpa:repositories base-package="com.official.foundation.dao"
+		factory-class="com.official.core.base.repository.BaseRepositoryFactoryBean"
+		entity-manager-factory-ref="entityManagerFactory"
+		transaction-manager-ref="transactionManager" repository-impl-postfix="Impl" />
+	
+	<!--RepositoryHelper  entityManagerFactory 注入 -->
+	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="staticMethod"
+			value="com.forerunner.core.repository.RepositoryHelper.setEntityManagerFactory" />
+		<property name="arguments" ref="entityManagerFactory" />
+	</bean>
+	
+	<!-- 注解事物管理 开启-->
+	<tx:annotation-driven transaction-manager="transactionManager" />
+	
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactory" />
+	</bean>
+	
+	<import resource="dubbo.xml" />
+</beans>
