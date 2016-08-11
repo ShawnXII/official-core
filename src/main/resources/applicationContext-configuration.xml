@@ -21,7 +21,11 @@
 	default-autowire="byName" default-lazy-init="false">
 	
 	<context:property-placeholder location="classpath:resources.properties" />
+	
+	<context:component-scan base-package="com.official.foundation.service" />	
+	
 	<bean class="com.official.core.util.SpringUtils"> </bean>
+	
 	<!-- EclipseLink 连接池配置-->
 	<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
 		<property name="persistenceXmlLocation" value="classpath:META-INF/persistence.xml" />
@@ -51,19 +55,6 @@
 			</map>
 		</property>
 	</bean>
-	<!-- Spring Data JPA 配置 -->
-	<jpa:repositories base-package="com.official.foundation.dao"
-		factory-class="com.official.core.base.repository.BaseRepositoryFactoryBean"
-		entity-manager-factory-ref="entityManagerFactory"
-		transaction-manager-ref="transactionManager" repository-impl-postfix="Impl" />
-	
-	<!--RepositoryHelper  entityManagerFactory 注入 -->
-	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-		<property name="staticMethod"
-			value="com.forerunner.core.repository.RepositoryHelper.setEntityManagerFactory" />
-		<property name="arguments" ref="entityManagerFactory" />
-	</bean>
-	
 	<!-- 注解事物管理 开启-->
 	<tx:annotation-driven transaction-manager="transactionManager" />
 	

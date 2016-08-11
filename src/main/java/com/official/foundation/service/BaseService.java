@@ -3,6 +3,8 @@ package com.official.foundation.service;
 import java.util.Collection;
 import java.util.List;
 
+import javax.persistence.EntityManagerFactory;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,150 +13,119 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.common.collect.Lists;
 import com.official.core.base.entity.Entity;
-import com.official.core.base.repository.SimpleBaseRepositoryFactoryBean;
 import com.official.core.base.search.support.Searchable;
+import com.official.core.eclipselink.jpa.dao.BaseDao;
+import com.official.core.eclipselink.jpa.dao.impl.MySqlBaseDaoImpl;
 import com.official.foundation.facade.BaseFacadeService;
 
 @Transactional
-public abstract class BaseService<M extends Entity<ID>, ID extends java.io.Serializable>
+public  class BaseService<M extends Entity<ID>, ID extends java.io.Serializable>
 		implements BaseFacadeService<M, ID> {
 
 	protected static final Logger logger = LoggerFactory.getLogger(BaseService.class);
-
-	protected SimpleBaseRepositoryFactoryBean<M, ID> simpleBaseRepositoryFactoryBean;
-
+	
 	@Autowired
-	public void setSimpleBaseRepositoryFactoryBean(
-			SimpleBaseRepositoryFactoryBean<M, ID> simpleBaseRepositoryFactoryBean) {
-		this.simpleBaseRepositoryFactoryBean = simpleBaseRepositoryFactoryBean;
+	private EntityManagerFactory entityManagerFactory;
+	
+	
+	public BaseDao<M,ID> getBaseDaoBean(){
+		return new MySqlBaseDaoImpl<M,ID>(entityManagerFactory);	
 	}
 
-	public SimpleBaseRepositoryFactoryBean<M, ID> getSimpleBaseRepositoryFactoryBean() {
-		return this.simpleBaseRepositoryFactoryBean;
+
+	public M save(M entity) {
+		return getBaseDaoBean().save(entity);
 	}
 
-	public M save(M m) {
-		M m1 = simpleBaseRepositoryFactoryBean.save(m);
-		if (logger.isDebugEnabled()) {
-			logger.debug("save entity:[" + m1.toString() + "]");
-		}
-		return m1;
+
+	public List<M> save(Collection<M> entitys) {
+		return getBaseDaoBean().save(entitys);
 	}
 
-	@Transactional
-	public List<M> save(Collection<M> entities) {
-		List<M> result = Lists.newArrayList();
-		if (entities == null) {
-			return result;
-		}
-		for (M entity : entities) {
-			result.add(save(entity));
-		}
-		if (logger.isDebugEnabled()) {
-			logger.debug("save entitys:[" + entities + "]");
-		}
-		return result;
+
+	public M saveAndFlush(M entity) {
+		return getBaseDaoBean().saveAndFlush(entity);
 	}
 
-	public M saveOrUpdate(M m) {
-		return save(m);
-	}
-
-	public M saveAndFlush(M m) {
-		M m1 = save(m);
-		this.flush();
-		return m1;
-	}
 
 	public int delete(ID id) {
-		if (logger.isDebugEnabled()) {
-			logger.debug("delete entitys id:[" + id + "]");
-		}
-		try {
-			this.simpleBaseRepositoryFactoryBean.delete(id);
-			return 1;
-		} catch (Exception e) {
-
-		}
-		return 0;
+		return getBaseDaoBean().delete(id);
 	}
 
-	public int delete(M m) {
-		if (m == null) {
-			return 0;
-		}
-		return delete(m.getId());
+
+	public int delete(M entity) {
+		return getBaseDaoBean().delete(entity);
 	}
 
-	@Transactional
-	public int delete(Collection<ID> ids) {
-		if (logger.isDebugEnabled()) {
-			logger.debug("delete ids:[" + ids + "]");
-		}
-		try {
-			this.simpleBaseRepositoryFactoryBean.delete(ids);
-			return ids.size();
-		} catch (Exception e) {
 
-		}
-		return 0;
+	public int delete(ID[] ids) {
+		return getBaseDaoBean().delete(ids);
 	}
+
 
 	public M findOne(ID id) {
-		return this.simpleBaseRepositoryFactoryBean.findOne(id);
+		return getBaseDaoBean().findOne(id);
 	}
+
 
 	public boolean exists(ID id) {
-		return this.simpleBaseRepositoryFactoryBean.exists(id);
+		return getBaseDaoBean().exists(id);
 	}
+
 
 	public long count() {
-		return this.simpleBaseRepositoryFactoryBean.count();
+		return getBaseDaoBean().count();
 	}
+
 
 	public List<M> findAll() {
-		return this.simpleBaseRepositoryFactoryBean.findAll();
+		return getBaseDaoBean().findAll();
 	}
+
 
 	public List<M> findAll(Sort sort) {
-		return this.simpleBaseRepositoryFactoryBean.findAll(sort);
+		return  getBaseDaoBean().findAll(sort);
 	}
+
 
 	public Page<M> findAll(Pageable pageable) {
-		return simpleBaseRepositoryFactoryBean.findAll(pageable);
+		return getBaseDaoBean().findAll(pageable);
 	}
+
 
 	public Page<M> findAll(Searchable searchable) {
-		return simpleBaseRepositoryFactoryBean.findAll(searchable);
+		return getBaseDaoBean().findAll(searchable);
 	}
+
 
 	public List<M> findAll(String definedSql) {
-		return simpleBaseRepositoryFactoryBean.findAll(definedSql);
+		return this.getBaseDaoBean().findAll(definedSql);
 	}
+
 
 	public List<M> findAll(String definedSql, Object... params) {
-		return simpleBaseRepositoryFactoryBean.findAll(definedSql, params);
+		return this.getBaseDaoBean().findAll(definedSql,params);
 	}
+
 
 	public List<M> findAllWithNoPageNoSort(Searchable searchable) {
-		searchable.removePageable();
-		searchable.removeSort();
-		return Lists.newArrayList(simpleBaseRepositoryFactoryBean.findAll(searchable).getContent());
+		return this.getBaseDaoBean().findAllWithNoPageNoSort(searchable);
 	}
+
 
 	public List<M> findAllWithSort(Searchable searchable) {
-		searchable.removePageable();
-		return Lists.newArrayList(simpleBaseRepositoryFactoryBean.findAll(searchable).getContent());
+		return this.getBaseDaoBean().findAllWithSort(searchable);
 	}
+
 
 	public Long count(Searchable searchable) {
-		return this.simpleBaseRepositoryFactoryBean.count(searchable);
+		return this.getBaseDaoBean().count();
 	}
 
+
 	public void flush() {
-		simpleBaseRepositoryFactoryBean.flush();
-	}
+		this.getBaseDaoBean().flush();	
+	}	
 
 }

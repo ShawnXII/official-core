@@ -53,6 +53,5 @@
 		<appender-ref ref="App_day" />
 		<appender-ref ref="Console" />
 		<!-- <appender-ref ref="ASYNC" />   -->
-	</root>
-	
+	</root>	
 </log4j:configuration>
