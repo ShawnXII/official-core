@@ -12,7 +12,14 @@
 	<dubbo:protocol name="dubbo" port="20882" />	
 	
 	<dubbo:provider version="1.0.0" timeout="5000" />
-	
+	<!-- 品牌 -->
+	<dubbo:service interface="com.official.foundation.facade.product.BrandFacadeService" ref="brandService" />
+	<!-- 产品分类 -->
 	<dubbo:service interface="com.official.foundation.facade.product.ClassifyFacadeService" ref="classifyService" />
-	
+	<!-- 产品  -->
+	<dubbo:service interface="com.official.foundation.facade.product.CommodityFacadeService" ref="commodityService" />
+	<!--产品参数  -->
+	<dubbo:service interface="com.official.foundation.facade.product.PropertyFacadeService" ref="propertyService" />
+	<!-- 产品规格 -->
+	<dubbo:service interface="com.official.foundation.facade.product.SpecificationFacadeService" ref="specificationService" />
 </beans>

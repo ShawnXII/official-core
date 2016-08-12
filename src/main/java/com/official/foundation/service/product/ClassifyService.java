@@ -8,5 +8,6 @@ import com.official.foundation.service.BaseService;
 
 @Service
 public class ClassifyService extends BaseService<Classify,Long> implements ClassifyFacadeService{
-
+	
+	
 }

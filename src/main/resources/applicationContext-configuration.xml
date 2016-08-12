@@ -22,8 +22,8 @@
 	
 	<context:property-placeholder location="classpath:resources.properties" />
 	
-	<context:component-scan base-package="com.official.foundation.service" />	
-	
+	<context:component-scan base-package="com.official" />	
+	 
 	<bean class="com.official.core.util.SpringUtils"> </bean>
 	
 	<!-- EclipseLink 连接池配置-->
@@ -55,6 +55,19 @@
 			</map>
 		</property>
 	</bean>
+	
+	<!-- JPA自定义实现类配置 类的后缀为 Impl -->
+	<jpa:repositories base-package="com.official.foundation.dao"
+		factory-class="com.official.core.base.repository.BaseRepositoryFactoryBean"
+		entity-manager-factory-ref="entityManagerFactory"
+		transaction-manager-ref="transactionManager" repository-impl-postfix="Impl" />
+
+	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="staticMethod"
+			value="com.official.core.base.repository.RepositoryHelper.setEntityManagerFactory" />
+		<property name="arguments" ref="entityManagerFactory" />
+	</bean>
+	
 	<!-- 注解事物管理 开启-->
 	<tx:annotation-driven transaction-manager="transactionManager" />
 	

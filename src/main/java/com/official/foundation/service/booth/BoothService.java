@@ -8,5 +8,7 @@ import com.official.foundation.service.BaseService;
 
 @Service
 public class BoothService extends BaseService<Booth,Long> implements BoothFacadeService{
-
+	
+	
+	
 }
