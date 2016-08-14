@@ -22,4 +22,6 @@
 	<dubbo:service interface="com.official.foundation.facade.product.PropertyFacadeService" ref="propertyService" />
 	<!-- 产品规格 -->
 	<dubbo:service interface="com.official.foundation.facade.product.SpecificationFacadeService" ref="specificationService" />
+	<!-- 帐号 -->
+	<dubbo:service interface="com.official.foundation.facade.user.AccountFacadeService" ref="accountService" />
 </beans>

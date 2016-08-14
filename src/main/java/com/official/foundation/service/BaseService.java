@@ -15,6 +15,7 @@ import com.google.common.collect.Lists;
 import com.official.core.base.entity.Entity;
 import com.official.core.base.repository.BaseRepository;
 import com.official.core.base.search.support.Searchable;
+import com.official.core.util.Commutil;
 
 @Transactional
 public abstract class BaseService<M extends Entity<ID>, ID extends java.io.Serializable> {
@@ -32,7 +33,16 @@ public abstract class BaseService<M extends Entity<ID>, ID extends java.io.Seria
 		return this.baseRepository;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public M save(M m) {
+		Long eid=Commutil.null2Long(m.getId(), -1);
+		if (m.isNew()||eid<1) {
+			Long id = Commutil.generateId();
+			m.setId((ID) id);
+			if (logger.isDebugEnabled()) {
+				logger.debug("new data,entity Generate id:[{}],entity:[{}]", id, m);
+			}
+		}
 		M m1 = baseRepository.save(m);
 		if (logger.isDebugEnabled()) {
 			logger.debug("save entity:[" + m1.toString() + "]");
@@ -136,14 +146,11 @@ public abstract class BaseService<M extends Entity<ID>, ID extends java.io.Seria
 	}
 
 	public List<M> findAllWithNoPageNoSort(Searchable searchable) {
-		searchable.removePageable();
-		searchable.removeSort();
-		return Lists.newArrayList(baseRepository.findAll(searchable).getContent());
+		return baseRepository.findAllWithNoPageNoSort(searchable);
 	}
 
 	public List<M> findAllWithSort(Searchable searchable) {
-		searchable.removePageable();
-		return Lists.newArrayList(baseRepository.findAll(searchable).getContent());
+		return baseRepository.findAllWithSort(searchable);
 	}
 
 	public Long count(Searchable searchable) {

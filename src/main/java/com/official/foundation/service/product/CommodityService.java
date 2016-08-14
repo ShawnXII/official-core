@@ -8,5 +8,5 @@ import com.official.foundation.service.BaseService;
 
 @Service
 public class CommodityService extends BaseService<Commodity,Long> implements CommodityFacadeService{
-
+	
 }

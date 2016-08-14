@@ -19,15 +19,17 @@
        http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
        http://www.springframework.org/schema/data/repository http://www.springframework.org/schema/data/repository/spring-repository-1.5.xsd"
 	default-autowire="byName" default-lazy-init="false">
-	
+
 	<context:property-placeholder location="classpath:resources.properties" />
-	
-	<context:component-scan base-package="com.official" />	
-	 
-	<bean class="com.official.core.util.SpringUtils"> </bean>
-	
-	<!-- EclipseLink 连接池配置-->
-	<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+
+	<context:component-scan base-package="com.official" />
+
+	<bean class="com.official.core.util.SpringUtils">
+	</bean>
+
+	<!-- EclipseLink 连接池配置 -->
+	<bean id="entityManagerFactory"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
 		<property name="persistenceXmlLocation" value="classpath:META-INF/persistence.xml" />
 		<property name="persistenceUnitName" value="${jpa.persistenceUnitName}" />
 		<property name="jpaVendorAdapter">
@@ -41,7 +43,8 @@
 		<property name="jpaPropertyMap">
 			<map>
 				<entry key="eclipselink.weaving" value="false" />
-				<entry key="eclipselink.connection-pool.default.initial" value="1" />	
+				<entry key="eclipselink.connection-pool.default.initial"
+					value="1" />
 				<entry key="eclipselink.connection-pool.default.max" value="150" />
 				<entry key="eclipselink.connection-pool.default.min" value="1" />
 				<entry key="eclipselink.jdbc.read-connections.min" value="20" />
@@ -55,25 +58,32 @@
 			</map>
 		</property>
 	</bean>
-	
+
 	<!-- JPA自定义实现类配置 类的后缀为 Impl -->
 	<jpa:repositories base-package="com.official.foundation.dao"
 		factory-class="com.official.core.base.repository.BaseRepositoryFactoryBean"
 		entity-manager-factory-ref="entityManagerFactory"
 		transaction-manager-ref="transactionManager" repository-impl-postfix="Impl" />
 
-	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+	<bean
+		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
 		<property name="staticMethod"
 			value="com.official.core.base.repository.RepositoryHelper.setEntityManagerFactory" />
 		<property name="arguments" ref="entityManagerFactory" />
 	</bean>
-	
-	<!-- 注解事物管理 开启-->
+	<!-- 类型转换及数据格式化 -->
+    <bean id="conversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean"/>
+
+    <!-- 直接把id转换为entity 必须非lazy否则无法注册-->
+    <bean id="domainClassConverter" class="org.springframework.data.repository.support.DomainClassConverter">
+        <constructor-arg ref="conversionService"/>
+    </bean>
+	<!-- 注解事物管理 开启 -->
 	<tx:annotation-driven transaction-manager="transactionManager" />
-	
+
 	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
 		<property name="entityManagerFactory" ref="entityManagerFactory" />
 	</bean>
-	
+
 	<import resource="dubbo.xml" />
 </beans>
